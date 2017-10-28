@@ -32,38 +32,26 @@ public class HashFrequencyTable<K> implements FrequencyTable<K>, Iterable<K>{
 		int h = key.hashCode() & (sz2- 1);
 		Pair y = table.get(h);
 		int k = h;
-		System.out.println("Attempting to insert "+key+" into slot "+k);
 		if (x)
 		{
-			//if (y!=null)
-			//{
-			while(y!=null && !(key.equals(y.key)))
+			while(y!=null && !(key.equals(y.key)))					//if a Pair exists and is not equal to the desired Pair, start probing
 			{
-				System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-				//System.out.print("key = " + key + " found key= "+ y.key);
 				k = ((h + i*(i + 1)/2) & (sz2 - 1));
-				//System.out.print(i+" ");
-				//System.out.println(h);
 				y = table.get(k);
 				i++;
 			}
-			if (y!=null)
+			if (y!=null)											//Probe success! we have found our desired Pair location
 			{
-				if (key.equals(y.key))
-				{
-					System.out.println("key equals, yay");
-				}
 				y.count = y.count+1;
 				table.set(k, y);
 			}
-			else
+			else													//Key not found and we got to an empty slot, so fill this one
 			{
 				Pair temp = new Pair(key);
 				table.set(k, temp);
 				filledSlots++;
 				loadFactor();
 			}
-			//}
 		}
 		else
 		{
@@ -83,62 +71,24 @@ public class HashFrequencyTable<K> implements FrequencyTable<K>, Iterable<K>{
 				return y;
 			}
 		}
-		return y;
-		/*
-		int h = key.hashCode();
-		Pair y = table.get(h);
-		if (y!=null && y.key.equals(key))
-		{
-			
-		}
-		//int h = key.hashCode() & (sz2 - 1);//assumes sz is a power of 2
-		//Pair y = table.get(h);
-		if (x)
-		{
-			if (y !=null)
-			{
-				y.count = y.count+1;
-				System.out.println(y.count);
-				table.set(h, y);
-			}
-			else
-			{
-				System.out.println("elsetest");
-				Pair test = new Pair(key);
-				table.set(h, test);
-			}
-			filledSlots++;
-			loadFactor();
-		}
-		return y;
-		*/
-		
+		return y;	
 	}
 	
 	private void loadFactor() //Tests load factor, if over max, builds a bigger table and rehashes
 	{
 		float lfactor = filledSlots / (float)sz2;
-		System.out.println("This is the load factor " + lfactor + " this is max "+ maxLFactor);
 		if ( lfactor > maxLFactor )
 		{
-			dump(System.out);
-			System.out.println("test dump please ignore");
-			
 			ArrayList<Pair> tempTable = new ArrayList<>(table);
-			System.out.println("It got here--sz2 is "+ sz2);
 			sz2 = nextPowerOfTwo(sz2+1);
-			System.out.println("sz2 is now" + sz2);
 			table = new ArrayList<Pair>(sz2);
 			for (int i = 0; i < sz2; i++)
 				table.add(null);
-			dump(System.out);
-			System.out.println("test dump please ignore");
 			
 			for(Pair p : tempTable)
 			{
 				if (p!=null)
 				{
-					System.out.println("Attempting to copy "+p.key+" to new table");
 					int i = 0;
 					int h = (p.key.hashCode() & (sz2 - 1));
 					int k = h;
@@ -150,8 +100,6 @@ public class HashFrequencyTable<K> implements FrequencyTable<K>, Iterable<K>{
 						p2 = table.get(k);
 					}
 					table.set(k, p);
-					
-					System.out.println("Success? copying "+ table.get(k).key+" in spot "+k);
 				}
 				
 				
@@ -160,9 +108,7 @@ public class HashFrequencyTable<K> implements FrequencyTable<K>, Iterable<K>{
 	}
 
 	public void click(K key) {
-		System.out.println("Click "+key);
 		probe(key, true);
-		System.out.println("Click "+ key +" Completed.");
 	}
 
 	public int count(K key) {
